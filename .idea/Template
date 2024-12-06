@@ -1,47 +1,40 @@
--- Users Table: Stores user information
 CREATE TABLE Users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Quizzes Table: Stores details of individual quizzes
 CREATE TABLE Quizzes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    quiz_id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     description TEXT,
-    created_by INT,
-    FOREIGN KEY (created_by) REFERENCES Users(id) ON DELETE SET NULL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Questions Table: Contains the questions in each quiz
 CREATE TABLE Questions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    question_id INT AUTO_INCREMENT PRIMARY KEY,
     quiz_id INT NOT NULL,
-    content TEXT NOT NULL,
-    FOREIGN KEY (quiz_id) REFERENCES Quizzes(id) ON DELETE CASCADE
+    text TEXT NOT NULL,
+    difficulty_level ENUM('Easy', 'Medium', 'Hard'),
+    FOREIGN KEY (quiz_id) REFERENCES Quizzes(quiz_id) ON DELETE CASCADE
 );
 
--- Answers Table: Stores the possible answers for each question
 CREATE TABLE Answers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    answer_id INT AUTO_INCREMENT PRIMARY KEY,
     question_id INT NOT NULL,
-    content TEXT NOT NULL,
-    is_correct BOOLEAN NOT NULL,
-    FOREIGN KEY (question_id) REFERENCES Questions(id) ON DELETE CASCADE
+    text TEXT NOT NULL,
+    is_correct BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (question_id) REFERENCES Questions(question_id) ON DELETE CASCADE
 );
 
--- User_Responses Table: Tracks the responses from users for each quiz
-CREATE TABLE User_Responses (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Results (
+    result_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     quiz_id INT NOT NULL,
-    question_id INT NOT NULL,
-    answer_id INT,
-    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
-    FOREIGN KEY (quiz_id) REFERENCES Quizzes(id) ON DELETE CASCADE,
-    FOREIGN KEY (question_id) REFERENCES Questions(id) ON DELETE CASCADE,
-    FOREIGN KEY (answer_id) REFERENCES Answers(id) ON DELETE SET NULL
-
+    score DECIMAL(5, 2),
+    completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (quiz_id) REFERENCES Quizzes(quiz_id) ON DELETE CASCADE
 );
